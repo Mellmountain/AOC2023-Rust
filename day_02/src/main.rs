@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, BTreeMap};
 use nom::{
     bytes::complete::tag,
     character::complete::{
@@ -30,6 +30,24 @@ impl<'a> Game<'a> {
             })
         }).then_some(self.id.parse::<u32>().expect("should parse"))
     }
+
+    fn minimum_cube_set(&self) -> u32 {
+        let minimum: BTreeMap<&str, u32> = BTreeMap::new();
+        self.rounds
+            .iter()
+            .fold(minimum, |mut acc, round|{
+                for cube in round.iter() {
+                    acc.entry(cube.color)
+                        .and_modify(|v| {
+                            *v = (*v).max(cube.amount);
+                        })
+                        .or_insert(cube.amount);
+                }
+                acc
+            })
+            .values()
+            .product()
+        }
 }
 
 //3 blue
@@ -63,11 +81,13 @@ fn parse_games(input: &str) -> IResult<&str, Vec<Game>> {
 fn main() {
     let input = include_str!("./input.txt");
     let limits = HashMap::from([
-        ("red", 12),
+        ("red",   12),
         ("green", 13),
-        ("blue", 14 )]);
+        ("blue",  14 )]);
     let games = parse_games(input).expect("Parse MF");
     let part1 = games.1.iter().filter_map(|game| game.is_valid(&limits)).sum::<u32>();
+    let part2 = games.1.iter().map(|game| game.minimum_cube_set()).sum::<u32>();
     println!("Part 1: {}", part1);
+    println!("Part 2: {}", part2);
     //dbg!(games);
 }
