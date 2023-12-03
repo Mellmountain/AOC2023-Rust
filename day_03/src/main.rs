@@ -35,7 +35,11 @@ fn main() {
     }
     let part1 = day03.numbers
                             .iter()
-                            .filter(|num| num.points.intersection(&day03.symbols).next().is_some())
+                            .filter(|num| 
+                                num.points
+                                .intersection(&day03.symbols)
+                                .next()
+                                .is_some())
                             .map(|num| num.value)
                             .sum::<i32>();
     println!("{}", part1);
