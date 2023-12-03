@@ -88,10 +88,6 @@ impl PartNumber {
     fn is_valid(&self, symbols: &HashSet<(i32, i32)>) -> bool {
         self.points.intersection(&symbols).next().is_some()
     }
-
-    fn is_gear(&self, symbols: &HashSet<(i32, i32)>) -> bool {
-        todo!()
-    }
    
     fn number(&self) -> i32 {
         self.value
