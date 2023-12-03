@@ -35,12 +35,8 @@ fn main() {
     }
     let part1 = day03.numbers
                             .iter()
-                            .filter(|num| 
-                                num.points
-                                .intersection(&day03.symbols)
-                                .next()
-                                .is_some())
-                            .map(|num| num.value)
+                            .filter(|part| part.is_valid(&day03.symbols))
+                            .map(PartNumber::number)
                             .sum::<i32>();
     println!("{}", part1);
 
@@ -63,8 +59,17 @@ impl PartNumber {
             points
         }
     }
+    
     fn add_digit(&mut self, x: i32, y: i32, c: char) {
         self.value = self.value * 10 + (c as u8 - b'0') as i32;
         self.points.extend([(x + 1, y), (x + 1, y - 1), (x + 1, y + 1)]);
+    }
+    
+    fn is_valid(&self, symbols: &HashSet<(i32, i32)>) -> bool {
+        self.points.intersection(&symbols).next().is_some()
+    }
+   
+    fn number(&self) -> i32 {
+        self.value
     }
 }
