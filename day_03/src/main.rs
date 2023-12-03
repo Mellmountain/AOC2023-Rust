@@ -2,8 +2,9 @@ use std::collections::HashSet;
 
 #[derive(Default)]
 struct Day03 {
-    numbers: Vec<PartNumber>,
+    parts: Vec<PartNumber>,
     symbols: HashSet<(i32, i32)>,
+    gears: HashSet<(i32, i32)>,
 }
 
 impl Day03 {
@@ -18,27 +19,46 @@ fn main() {
     for (y, line) in input.into_iter().enumerate() {
         for (x, c) in line.chars().enumerate() {
             if c.is_ascii_digit() {
-                if let Some(ref mut num) = curr_part {
-                    num.add_digit(x as i32, y as i32, c);
+                if let Some(ref mut part) = curr_part {
+                    part.add_digit(x as i32, y as i32, c);
                 } else {
                     curr_part = Some(PartNumber::new(x as i32, y as i32, c));
                 }
             } else {
-                if let Some(num) = curr_part.take() {
-                    day03.numbers.push(num);
+                if let Some(part) = curr_part.take() {
+                    day03.parts.push(part);
                 }
                 if c != '.' {
                     day03.symbols.insert((x as i32, y as i32));
+                    if c == '*' {
+                        day03.gears.insert((x as i32, y as i32));
+                    }
                 }
             }
         }
     }
-    let part1 = day03.numbers
+    let part1 = day03.parts
                             .iter()
                             .filter(|part| part.is_valid(&day03.symbols))
                             .map(PartNumber::number)
                             .sum::<i32>();
+    let mut part2 = 0;
+    'next_gear: for gear in day03.gears {
+        let mut matches = Vec::new();
+        for part in &day03.parts {
+            if part.points.contains(&gear) {
+                if matches.len() == 2 {
+                    continue 'next_gear;
+                }
+                matches.push(part.value);
+            }
+        }
+        if matches.len() == 2 {
+            part2 += matches[0] * matches[1];
+        }
+    }
     println!("{}", part1);
+    println!("{}", part2);
 
 }
 #[derive(Debug)]
@@ -67,6 +87,10 @@ impl PartNumber {
     
     fn is_valid(&self, symbols: &HashSet<(i32, i32)>) -> bool {
         self.points.intersection(&symbols).next().is_some()
+    }
+
+    fn is_gear(&self, symbols: &HashSet<(i32, i32)>) -> bool {
+        todo!()
     }
    
     fn number(&self) -> i32 {
