@@ -8,12 +8,16 @@ struct Card {
 
 impl Card {
     fn score(&self) -> i32 {
-        let count = self.winning.intersection(&self.numbers).count() as u32;
+        let count = self.matches() as u32;
         if count > 0 {
             i32::pow(2, count - 1)
         } else {
             0
         }
+    }
+
+    fn matches(&self) -> usize {
+        self.winning.intersection(&self.numbers).count()
     }
 }
 
@@ -29,6 +33,13 @@ fn main() {
 
         cards.push(Card {winning, numbers});
     }
-
+    let mut counts = vec![1usize; cards.len()];
+    for (index, card) in cards.iter().enumerate() {
+        let count = card.matches();
+        for i in index + 1.. index + 1 + count {
+            counts[i] += counts[index];
+        }
+    }
     println!("Part 1: {}", cards.iter().map(Card::score).sum::<i32>());
+    println!("Part 2: {}", counts.iter().sum::<usize>());
 }
