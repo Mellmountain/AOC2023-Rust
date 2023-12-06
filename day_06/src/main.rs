@@ -1,14 +1,4 @@
-//Time:        56     97     77     93
-//Distance:   499   2210   1097   1440
-
-//Time:      7  15   30
-//Distance:  9  40  200
-
-
 fn main() {
-    println!("Hello, world!");
-    //let time: Vec<i64> = vec![7, 15, 30];  // Sample
-    //let dist: Vec<i64> = vec![9, 40, 200]; // Sample
     let time: Vec<i64> = vec![56, 97, 77, 93];
     let dist: Vec<i64> = vec![499, 2210, 1097, 1440];
     let time_p2: Vec<i64> = vec![56977793];
@@ -37,7 +27,7 @@ fn main() {
     for (idx, v) in result_p2.iter().enumerate() {
         part2 *= v.iter().filter(|d| d > &&dist_p2[idx]).count();
     }
-    println!("{}", part1);
-    println!("{}", part2)
+    println!("Part 1: {}", part1);
+    println!("Part 2: {}", part2)
 
 }
