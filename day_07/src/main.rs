@@ -3,10 +3,12 @@ struct Hand {
     cards: Vec<Card>,
     bid: usize,
     score: usize,
+    wildcard: usize,
 }
 
 #[derive(Debug, Clone, Copy, Ord, Eq, PartialEq, PartialOrd)]
 enum Card {
+    Joker,
     Two,
     Three,
     Four,
@@ -33,6 +35,13 @@ enum HandType {
 }
 
 impl Card {
+    fn is(self, other:Card) -> bool {
+        if self == Self::Joker || other == Self::Joker {
+            false
+        } else {
+            self == other
+        }
+    }
     fn from_char(c: char) -> Self {
         match c {
             '2' => Self::Two,
@@ -56,35 +65,83 @@ impl Card {
 impl Hand {
     fn new (hand: &[Card], bid: usize) -> Self {
         let score = Self::score(hand);
-        Self {cards: hand.to_vec(), bid, score}    
+        let wildcard_score = Self::score_wildcard(hand);
+        Self {cards: hand.to_vec(), bid, score, wildcard: wildcard_score}    
     }
 
+    fn score_wildcard(hand : &[Card]) -> usize {
+        let wildcard_hand: Vec<Card> = hand.iter().map(|card| {
+           if *card == Card::Jack {
+            Card::Joker
+           } else {
+            *card
+           }
+        }).collect();
+        Self::score(&wildcard_hand)
+        
+    }
+    
     fn score(hand: &[Card]) -> usize{
         let mut sorted: Vec<Card> = hand.into();
         sorted.sort();
         
+        let joker_count = hand.iter().filter(|card| **card == Card::Joker).count();
         let handtype = if sorted[0] == sorted[4] {
             HandType::FiveOfAKind
-        } else if sorted[0] == sorted[3] || sorted[1] == sorted[4] {
-            HandType::FourOfAKind
-        } else if sorted[0] == sorted[2] && sorted[3] == sorted[4] ||
-                  sorted[0] == sorted[1] && sorted[2] == sorted[4] {
+        } else if sorted[0].is(sorted[3]) || sorted[1].is(sorted[4]) {
+            if joker_count == 1 {
+                HandType::FiveOfAKind
+            } else {
+                HandType::FourOfAKind
+            }
+        } else if sorted[0].is(sorted[2]) && sorted[3].is(sorted[4]) ||
+                  sorted[0].is(sorted[1]) && sorted[2].is(sorted[4]) {
             HandType::FullHouse
-        } else if sorted[0] == sorted[2] || 
-                  sorted[1] == sorted[3] ||
-                  sorted[2] == sorted[4] {
-            HandType::ThreeOfAKind
-        } else if sorted[0] == sorted[1] && sorted[2] == sorted[3] ||
-                  sorted[0] == sorted[1] && sorted[3] == sorted[4] ||
-                  sorted[1] == sorted[2] && sorted[3] == sorted[4] {
-            HandType::TwoPair
-        } else if sorted[0] == sorted[1] || 
-                  sorted[1] == sorted[2] ||
-                  sorted[2] == sorted[3] ||
-                  sorted[3] == sorted[4]{
-            HandType::OnePair
+        } else if sorted[0].is(sorted[2]) || 
+                  sorted[1].is(sorted[3]) ||
+                  sorted[2].is(sorted[4]) {
+            if joker_count == 0 {
+                HandType::ThreeOfAKind
+            } else if joker_count == 1 {
+                HandType::FourOfAKind
+            } else {
+                HandType::FiveOfAKind
+            }
+            
+        } else if sorted[0].is(sorted[1]) && sorted[2].is(sorted[3])||
+                  sorted[0].is(sorted[1]) && sorted[3].is(sorted[4])||
+                  sorted[1].is(sorted[2]) && sorted[3].is(sorted[4]) {
+            if joker_count == 1 {
+                HandType::FullHouse
+            } else {
+                HandType::TwoPair
+            }
+        } else if sorted[0].is(sorted[1]) || 
+                  sorted[1].is(sorted[2]) ||
+                  sorted[2].is(sorted[3]) ||
+                  sorted[3].is(sorted[4]){
+            
+            if joker_count == 3 {
+                HandType::FiveOfAKind
+            } else if joker_count == 2 {
+                HandType::FourOfAKind
+            } else if joker_count == 1 {
+                HandType::ThreeOfAKind
+            } else {
+                HandType::OnePair
+            }
         } else {
-            HandType::HighCard
+            if joker_count == 4 {
+                HandType::FiveOfAKind
+            } else if joker_count == 3 {
+                HandType::FourOfAKind
+            } else if joker_count == 2 {
+                HandType::ThreeOfAKind
+            } else if joker_count == 1 {
+                HandType::OnePair
+            } else {
+                HandType::HighCard
+            }
         };
         
         let mut score: usize = handtype as usize;
@@ -113,5 +170,12 @@ fn main() {
     for (idx, hand) in hands.iter().enumerate() {
         part1 += (idx + 1) * hand.bid;
     }
-    println!("{}", part1);
+    hands.sort_by(|hand_1, hand_2| hand_1.wildcard.cmp(&hand_2.wildcard));
+    let mut part2 = 0;
+    for(idx, hand) in hands.iter().enumerate() {
+        part2 += (idx + 1) * hand.bid
+    }
+
+    println!("Part 1: {}", part1);
+    println!("Part 2: {}", part2);
 }
