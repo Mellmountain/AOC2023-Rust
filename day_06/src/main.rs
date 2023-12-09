@@ -1,3 +1,10 @@
+
+// time_btn * (race_time - time_btn) = dist
+// dist > r
+// time_btn * (race_time - time_btn) > r
+// a * (b - a) > r
+// -a^2 + ba > r -> -a^2 + ab - r > 0 -> -a^2 + ba - c
+
 fn main() {
     let time: Vec<i64> = vec![56, 97, 77, 93];
     let dist: Vec<i64> = vec![499, 2210, 1097, 1440];
