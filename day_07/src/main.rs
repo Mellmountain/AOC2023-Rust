@@ -1,6 +1,6 @@
 #[derive(Debug)]
 struct Hand {
-    cards: Vec<Card>,
+    _cards: Vec<Card>,
     bid: usize,
     score: usize,
     wildcard: usize,
@@ -66,7 +66,7 @@ impl Hand {
     fn new (hand: &[Card], bid: usize) -> Self {
         let score = Self::score(hand);
         let wildcard_score = Self::score_wildcard(hand);
-        Self {cards: hand.to_vec(), bid, score, wildcard: wildcard_score}    
+        Self {_cards: hand.to_vec(), bid, score, wildcard: wildcard_score}    
     }
 
     fn score_wildcard(hand : &[Card]) -> usize {
@@ -161,7 +161,6 @@ fn main() {
 
         let hand = hand.chars().map(|c| Card::from_char(c)).collect::<Vec<_>>();
         let hand = Hand::new(&hand, bid);
-        //println!("{:?} score = {:x}", hand.cards, hand.score);
         hands.push(hand);
     }    
 
