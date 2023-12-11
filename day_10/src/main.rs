@@ -1,4 +1,4 @@
-use std::{collections::HashMap, cell};
+use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 struct Cell {
@@ -54,94 +54,89 @@ fn main() {
     visited.insert(start, CellType::Start);
     let mut celltype = map[pos.1 as usize][pos.0 as usize];
     loop {
-        //println!("{:?}", celltype);
-        //println!("{:?}", pos);
         match celltype {
             CellType::Start => {
-                if can_go_north(pos, map.clone(), visited.clone()) { pos = (pos.0, pos.1 - 1);}
-                else if can_go_south(pos, map.clone(), visited.clone()) { pos = (pos.0, pos.1 + 1);}
-                else if can_go_east(pos, map.clone(), visited.clone())  { pos = (pos.0 + 1, pos.1);}
-                else if can_go_west(pos, map.clone(), visited.clone())  { pos = (pos.0 - 1, pos.1);}
+                if can_go_north(pos, &map, &visited) { pos = (pos.0, pos.1 - 1);}
+                else if can_go_south(pos, &map, &visited) { pos = (pos.0, pos.1 + 1);}
+                else if can_go_east(pos, &map, &visited)  { pos = (pos.0 + 1, pos.1);}
+                else if can_go_west(pos, &map, &visited)  { pos = (pos.0 - 1, pos.1);}
                 else {
                     if can_go_start(pos, start) { pos = start; }
                     else {
-                        panic!("code bug, shoot me")
+                        unreachable!("code bug, shoot me")
                     }
                 }
             }
             CellType::EastWest => {
-                if can_go_east(pos, map.clone(), visited.clone()) { pos = (pos.0 + 1, pos.1);}
-                else if can_go_west(pos, map.clone(), visited.clone()) { pos = (pos.0 - 1, pos.1);}
+                if can_go_east(pos, &map, &visited) { pos = (pos.0 + 1, pos.1);}
+                else if can_go_west(pos, &map, &visited) { pos = (pos.0 - 1, pos.1);}
                 else {
                     if can_go_start(pos, start) { pos = start; }
                     else {
-                        panic!("code bug, shoot me")
+                        unreachable!("code bug, shoot me")
                     }
                 }
             }
             CellType::NorthSouth => {
-                if can_go_north(pos, map.clone(), visited.clone()) { pos = (pos.0, pos.1 - 1);}
-                else if can_go_south(pos, map.clone(), visited.clone()) { pos = (pos.0, pos.1 + 1);}
+                if can_go_north(pos, &map, &visited) { pos = (pos.0, pos.1 - 1);}
+                else if can_go_south(pos, &map, &visited) { pos = (pos.0, pos.1 + 1);}
                 else {
                     if can_go_start(pos, start) { pos = start; }
                     else {
-                        panic!("code bug")
+                        unreachable!("code bug, shoot me")
                     }
                 }
             }
             CellType::NorthEast => {
-                if can_go_north(pos, map.clone(), visited.clone()) { pos = (pos.0, pos.1 - 1);}
-                else if can_go_east(pos, map.clone(), visited.clone())  { pos = (pos.0 + 1, pos.1);}
+                if can_go_north(pos, &map, &visited) { pos = (pos.0, pos.1 - 1);}
+                else if can_go_east(pos, &map, &visited)  { pos = (pos.0 + 1, pos.1);}
                 else {
                     if can_go_start(pos, start) { pos = start; }
                     else {
-                        panic!("code bug")
+                        unreachable!("code bug, shoot me")
                     }
                 }
             }
             CellType::NorthWest => {
-                if can_go_north(pos, map.clone(), visited.clone()) { pos = (pos.0, pos.1 - 1);}
-                else if can_go_west(pos, map.clone(), visited.clone())  { pos = (pos.0 - 1, pos.1);}
+                if can_go_north(pos, &map, &visited) { pos = (pos.0, pos.1 - 1);}
+                else if can_go_west(pos, &map, &visited)  { pos = (pos.0 - 1, pos.1);}
                 else {
                     if can_go_start(pos, start) { pos = start; }
                     else {
-                        panic!("code bug")
+                        unreachable!("code bug, shoot me")
                     }
                 }
             }
             CellType::SouthWest => {
-                if can_go_south(pos, map.clone(), visited.clone()) { pos = (pos.0, pos.1 + 1);}
-                else if can_go_west(pos, map.clone(), visited.clone())  { pos = (pos.0 - 1, pos.1);}
+                if can_go_south(pos, &map, &visited) { pos = (pos.0, pos.1 + 1);}
+                else if can_go_west(pos, &map, &visited)  { pos = (pos.0 - 1, pos.1);}
                 else {
                     if can_go_start(pos, start) { pos = start; }
                     else {
-                        panic!("code bug")
+                        unreachable!("code bug, shoot me")
                     }
                 }
             }
             CellType::SouthEast => {
-                if can_go_south(pos, map.clone(), visited.clone()) { pos = (pos.0, pos.1 + 1);}
-                else if can_go_east(pos, map.clone(), visited.clone())  { pos = (pos.0 + 1, pos.1);}
+                if can_go_south(pos, &map, &visited) { pos = (pos.0, pos.1 + 1);}
+                else if can_go_east(pos, &map, &visited)  { pos = (pos.0 + 1, pos.1);}
                 else {
                     if can_go_start(pos, start) { pos = start; }
                     else {
-                        panic!("code bug")
+                        unreachable!("code bug, shoot me")
                     }
                 }
             }
-            _ => { panic!("Code bug deluxe!")}
+            _ => { unreachable!("Code bug deluxe!")}
         }
         
-        //println!("{:?}", pipe_loop);
         celltype = map[pos.1 as usize][pos.0 as usize];
         if celltype == CellType::Start { break }
         visited.insert(pos, celltype);
         pipe_loop.push(Cell {position: pos, celltype: celltype});
 
     }
-    //println!("{:?}", start);
-    //println!("{:?}", map[start.1 as usize][start.0 as usize]);
-    println!("{}", pipe_loop.len() / 2);
+    println!("Part 1: {}", pipe_loop.len() / 2);
 }
 fn can_go_start(pos: (i32, i32), start: (i32, i32)) -> bool {
     if (pos.0 - 1, pos.1) == start ||
@@ -153,7 +148,7 @@ fn can_go_start(pos: (i32, i32), start: (i32, i32)) -> bool {
     false
 }
 
-fn can_go_north(pos: (i32, i32), map: Vec<Vec<CellType>>, visited: HashMap<(i32,i32), CellType>) -> bool {
+fn can_go_north(pos: (i32, i32), map: &Vec<Vec<CellType>>, visited: &HashMap<(i32,i32), CellType>) -> bool {
     let newpos = (pos.0, pos.1 - 1);
     if newpos.1 > map.len().try_into().unwrap() || visited.contains_key(&newpos) { return false }
     let possible = map[newpos.1 as usize][newpos.0 as usize]; 
@@ -165,7 +160,7 @@ fn can_go_north(pos: (i32, i32), map: Vec<Vec<CellType>>, visited: HashMap<(i32,
     false
 }
 
-fn can_go_south(pos: (i32, i32), map: Vec<Vec<CellType>>, visited: HashMap<(i32,i32), CellType>) -> bool {
+fn can_go_south(pos: (i32, i32), map: &Vec<Vec<CellType>>, visited: &HashMap<(i32,i32), CellType>) -> bool {
     let newpos = (pos.0, pos.1 + 1);
     if newpos.1 < 0 || visited.contains_key(&newpos){ return false }
     let possible = map[newpos.1 as usize][newpos.0 as usize];
@@ -177,7 +172,7 @@ fn can_go_south(pos: (i32, i32), map: Vec<Vec<CellType>>, visited: HashMap<(i32,
     false
 }
 
-fn can_go_east(pos: (i32, i32), map: Vec<Vec<CellType>>, visited: HashMap<(i32,i32), CellType>) -> bool {
+fn can_go_east(pos: (i32, i32), map: &Vec<Vec<CellType>>, visited: &HashMap<(i32,i32), CellType>) -> bool {
     let newpos = (pos.0 + 1, pos.1);
     if newpos.0 > map[0].len().try_into().unwrap() || visited.contains_key(&newpos) { return false }
     let possible = map[newpos.1 as usize][newpos.0 as usize];
@@ -189,7 +184,7 @@ fn can_go_east(pos: (i32, i32), map: Vec<Vec<CellType>>, visited: HashMap<(i32,i
     false
 }
 
-fn can_go_west(pos: (i32, i32), map: Vec<Vec<CellType>>, visited: HashMap<(i32,i32), CellType>) -> bool {
+fn can_go_west(pos: (i32, i32), map: &Vec<Vec<CellType>>, visited: &HashMap<(i32,i32), CellType>) -> bool {
     let newpos = (pos.0 - 1, pos.1);
     if newpos.0 < 0 || visited.contains_key(&newpos) { return false }
     let possible = map[newpos.1 as usize][newpos.0 as usize];
